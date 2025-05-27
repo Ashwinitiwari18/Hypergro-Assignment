@@ -268,7 +268,6 @@ Request Body:
 
 5. **Security**
    - Test unauthorized access
-   - Test role-based access control
    - Test input validation
 
 ---
