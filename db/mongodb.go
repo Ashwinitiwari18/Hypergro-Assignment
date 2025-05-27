@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -19,31 +20,36 @@ var (
 	Recommendations *mongo.Collection
 )
 
-func InitDB() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func InitDB() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	connectionString := os.Getenv("MONGODB_URI")
 	if connectionString == "" {
-		log.Fatal("MONGODB_URI environment variable not set!")
+		return fmt.Errorf("MONGODB_URI environment variable is not set")
 	}
+
+	log.Printf("Attempting to connect to MongoDB...")
 
 	clientOptions := options.Client().
 		ApplyURI(connectionString).
-		SetServerAPIOptions(options.ServerAPI(options.ServerAPIVersion1))
+		SetServerAPIOptions(options.ServerAPI(options.ServerAPIVersion1)).
+		SetConnectTimeout(5 * time.Second)
 
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
-		log.Fatal("Error connecting to MongoDB:", err)
+		log.Printf("Error connecting to MongoDB: %v", err)
+		return fmt.Errorf("error connecting to MongoDB: %v", err)
 	}
 
 	// Ping the database to verify connection
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Fatal("Error pinging MongoDB:", err)
+		log.Printf("Error pinging MongoDB: %v", err)
+		return fmt.Errorf("error pinging MongoDB: %v", err)
 	}
 
-	log.Println("Successfully connected to MongoDB!")
+	log.Printf("Successfully connected to MongoDB!")
 
 	Client = client
 	Database = client.Database("property_listing")
@@ -53,10 +59,14 @@ func InitDB() {
 	Recommendations = Database.Collection("recommendations")
 
 	// Create indexes
-	createIndexes()
+	if err := createIndexes(); err != nil {
+		log.Printf("Warning: Error creating indexes: %v", err)
+	}
+
+	return nil
 }
 
-func createIndexes() {
+func createIndexes() error {
 	ctx := context.Background()
 
 	// Users collection indexes
@@ -66,6 +76,7 @@ func createIndexes() {
 	})
 	if err != nil {
 		log.Printf("Error creating email index: %v", err)
+		return err
 	}
 
 	// Properties collection indexes
@@ -74,6 +85,7 @@ func createIndexes() {
 	})
 	if err != nil {
 		log.Printf("Error creating createdBy index: %v", err)
+		return err
 	}
 
 	// Favorites collection indexes
@@ -86,6 +98,7 @@ func createIndexes() {
 	})
 	if err != nil {
 		log.Printf("Error creating favorites index: %v", err)
+		return err
 	}
 
 	// Recommendations collection indexes
@@ -97,5 +110,8 @@ func createIndexes() {
 	})
 	if err != nil {
 		log.Printf("Error creating recommendations index: %v", err)
+		return err
 	}
+
+	return nil
 }

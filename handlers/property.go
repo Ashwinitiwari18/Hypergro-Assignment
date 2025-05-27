@@ -37,11 +37,6 @@ type PropertyRequest struct {
 	Rating        float64  `json:"rating"`
 	IsVerified    bool     `json:"isVerified"`
 	ListingType   string   `json:"listingType"`
-	Location      string   `json:"location"`
-	Area          float64  `json:"area"`
-	Features      []string `json:"features"`
-	Status        string   `json:"status"`
-	Description   string   `json:"description"`
 }
 
 func CreateProperty(c *gin.Context) {
@@ -71,11 +66,6 @@ func CreateProperty(c *gin.Context) {
 		Rating:        req.Rating,
 		IsVerified:    req.IsVerified,
 		ListingType:   req.ListingType,
-		Location:      req.Location,
-		Area:          req.Area,
-		Features:      req.Features,
-		Status:        req.Status,
-		Description:   req.Description,
 		CreatedBy:     userID,
 		CreatedAt:     time.Now(),
 		UpdatedAt:     time.Now(),
@@ -292,11 +282,6 @@ func UpdateProperty(c *gin.Context) {
 			"rating":        req.Rating,
 			"isVerified":    req.IsVerified,
 			"listingType":   req.ListingType,
-			"location":      req.Location,
-			"area":          req.Area,
-			"features":      req.Features,
-			"status":        req.Status,
-			"description":   req.Description,
 			"updatedAt":     time.Now(),
 		},
 	}

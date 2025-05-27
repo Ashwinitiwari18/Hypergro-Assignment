@@ -2,8 +2,9 @@ package cache
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -11,55 +12,54 @@ import (
 
 var (
 	Client *redis.Client
+	Ctx    = context.Background()
 )
 
 func InitRedis() {
-	Client = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
+	redisURL := os.Getenv("REDIS_URL")
+	if redisURL == "" {
+		log.Printf("Warning: REDIS_URL environment variable not set. Redis caching will be disabled.")
+		return
+	}
 
-	ctx := context.Background()
-	_, err := Client.Ping(ctx).Result()
+	opt, err := redis.ParseURL(redisURL)
+	if err != nil {
+		log.Printf("Warning: Error parsing Redis URL: %v. Redis caching will be disabled.", err)
+		return
+	}
+
+	Client = redis.NewClient(opt)
+
+	// Test connection
+	_, err = Client.Ping(Ctx).Result()
 	if err != nil {
 		log.Printf("Warning: Redis connection failed: %v. Caching will be disabled.", err)
 		Client = nil
-	} else {
-		log.Println("Successfully connected to Redis")
+		return
 	}
+
+	log.Printf("Successfully connected to Redis!")
 }
 
 func Set(key string, value interface{}, expiration time.Duration) error {
 	if Client == nil {
-		return nil
+		return fmt.Errorf("redis client not initialized")
 	}
-	ctx := context.Background()
-	json, err := json.Marshal(value)
-	if err != nil {
-		return err
-	}
-	return Client.Set(ctx, key, json, expiration).Err()
+	return Client.Set(Ctx, key, value, expiration).Err()
 }
 
 func Get(key string, dest interface{}) error {
 	if Client == nil {
-		return redis.Nil
+		return fmt.Errorf("redis client not initialized")
 	}
-	ctx := context.Background()
-	val, err := Client.Get(ctx, key).Result()
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal([]byte(val), dest)
+	return Client.Get(Ctx, key).Scan(dest)
 }
 
 func Delete(key string) error {
 	if Client == nil {
-		return nil
+		return fmt.Errorf("redis client not initialized")
 	}
-	ctx := context.Background()
-	return Client.Del(ctx, key).Err()
+	return Client.Del(Ctx, key).Err()
 }
 
 func Exists(key string) (bool, error) {

@@ -74,12 +74,11 @@ func ImportPropertiesFromCSV(path string) error {
 		bedrooms, _ := strconv.Atoi(get("bedrooms"))
 		bathrooms, _ := strconv.Atoi(get("bathrooms"))
 		areaSqFt, _ := strconv.ParseFloat(get("areaSqFt"), 64)
-		area := areaSqFt // for legacy field
-		features := []string{}
-		if amenities := get("amenities"); amenities != "" {
-			features = strings.Split(amenities, ",")
-			for i := range features {
-				features[i] = strings.TrimSpace(features[i])
+		amenities := []string{}
+		if amenitiesStr := get("amenities"); amenitiesStr != "" {
+			amenities = strings.Split(amenitiesStr, ",")
+			for i := range amenities {
+				amenities[i] = strings.TrimSpace(amenities[i])
 			}
 		}
 		tags := []string{}
@@ -105,7 +104,7 @@ func ImportPropertiesFromCSV(path string) error {
 			AreaSqFt:      areaSqFt,
 			Bedrooms:      bedrooms,
 			Bathrooms:     bathrooms,
-			Amenities:     features,
+			Amenities:     amenities,
 			Furnished:     get("furnished"),
 			AvailableFrom: get("availableFrom"),
 			ListedBy:      get("listedBy"),
@@ -114,11 +113,6 @@ func ImportPropertiesFromCSV(path string) error {
 			Rating:        rating,
 			IsVerified:    isVerified,
 			ListingType:   get("listingType"),
-			Location:      strings.TrimSpace(get("city") + ", " + get("state")),
-			Area:          area,
-			Features:      features,
-			Status:        "available",
-			Description:   "Imported from CSV",
 			CreatedAt:     time.Now(),
 			UpdatedAt:     time.Now(),
 		}
@@ -127,7 +121,7 @@ func ImportPropertiesFromCSV(path string) error {
 	}
 
 	// Insert properties in batches
-	batchSize := 100
+	batchSize := 1000
 	for i := 0; i < len(properties); i += batchSize {
 		end := i + batchSize
 		if end > len(properties) {

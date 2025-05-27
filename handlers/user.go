@@ -2,16 +2,18 @@ package handlers
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"property-listing/db"
 	"property-listing/middleware"
 	"property-listing/models"
+
+	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type RegisterRequest struct {
@@ -28,6 +30,7 @@ type LoginRequest struct {
 func Register(c *gin.Context) {
 	var req RegisterRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
+		log.Printf("Error binding JSON in Register: %v", err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -36,6 +39,7 @@ func Register(c *gin.Context) {
 	var existingUser models.User
 	err := db.Users.FindOne(context.Background(), bson.M{"email": req.Email}).Decode(&existingUser)
 	if err == nil {
+		log.Printf("User with email %s already exists", req.Email)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already registered"})
 		return
 	}
@@ -43,6 +47,7 @@ func Register(c *gin.Context) {
 	// Hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
+		log.Printf("Error hashing password: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error hashing password"})
 		return
 	}
@@ -57,15 +62,18 @@ func Register(c *gin.Context) {
 		UpdatedAt: time.Now(),
 	}
 
-	_, err = db.Users.InsertOne(context.Background(), user)
+	result, err := db.Users.InsertOne(context.Background(), user)
 	if err != nil {
+		log.Printf("Error creating user in database: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error creating user"})
 		return
 	}
+	log.Printf("Successfully created user with ID: %v", result.InsertedID)
 
 	// Generate token
 	token, err := middleware.GenerateToken(user)
 	if err != nil {
+		log.Printf("Error generating token: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error generating token"})
 		return
 	}
@@ -117,4 +125,4 @@ func Login(c *gin.Context) {
 			"name":  user.Name,
 		},
 	})
-} 
+}

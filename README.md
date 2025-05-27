@@ -6,7 +6,7 @@ A robust backend system for managing property listings, built with **Go**, **Mon
 
 ## Features
 
-- **User Authentication:** Register and login with email/password.
+- **User Authentication:** Register and login with email/password (JWT tokens expire after 10 minutes).
 - **Property CRUD:** Create, read, update, and delete property listings.
 - **Advanced Filtering:** Search properties by 10+ attributes (state, city, area, amenities, etc.).
 - **Favorites:** Users can favorite/unfavorite properties.
@@ -45,13 +45,13 @@ go mod download
 Create a `.env` file in the root directory:
 
 ```
-MONGODB_URI=your-mongodb-connection-string
-GIN_MODE=debug
-# PORT=8080
-# REDIS_URL=redis://localhost:6379
+MONGODB_URI=your_mongodb_connection_string
+GIN_MODE=release
+PORT=8080
+REDIS_URL=your_redis_url (optional)
+IMPORT_CSV=false
+CSV_PATH=path_to_your_csv (if needed)
 ```
-
-> **Note:** Never commit your `.env` file. Only share `.env.example`!
 
 ### 4. **Run the Application**
 
@@ -69,12 +69,16 @@ The application is currently deployed and accessible at: [https://hypergro-assig
 
 ---
 
-
 ## API Endpoints
+
+### Base URL
+```
+https://hypergro-assignment-production.up.railway.app
+```
 
 ### **Authentication**
 - `POST /api/auth/register` — Register a new user
-- `POST /api/auth/login` — Login and get a JWT token
+- `POST /api/auth/login` — Login and get a JWT token (expires in 10 minutes)
 
 ### **Properties**
 - `POST /api/properties` — Create a property (auth required)
@@ -94,13 +98,6 @@ The application is currently deployed and accessible at: [https://hypergro-assig
 - `PUT /api/recommendations/:id/read` — Mark recommendation as read
 
 ---
-
-## Detailed API Documentation
-
-### Base URL
-```
-https://hypergro-assignment.railway.app
-```
 
 ### Authentication Endpoints
 
@@ -248,7 +245,7 @@ Request Body:
 1. **Authentication**
    - Always include JWT token in Authorization header for protected routes
    - Test with both valid and invalid tokens
-   - Test token expiration scenarios
+   - Test token expiration scenarios (tokens expire after 10 minutes)
 
 2. **Data Validation**
    - Test with valid and invalid data formats
@@ -314,3 +311,4 @@ Run the app once, then comment the import block again to avoid duplicate imports
 ---
 
 **For any questions or issues, please open an issue on GitHub.** 
+

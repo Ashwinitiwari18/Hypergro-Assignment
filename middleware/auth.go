@@ -5,9 +5,10 @@ import (
 	"strings"
 	"time"
 
+	"property-listing/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"property-listing/models"
 )
 
 var jwtSecret = []byte("your-secret-key") // In production, use environment variable
@@ -16,7 +17,7 @@ func GenerateToken(user models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":    user.ID.Hex(),
 		"email": user.Email,
-		"exp":   time.Now().Add(time.Hour * 24).Unix(),
+		"exp":   time.Now().Add(time.Minute * 10).Unix(),
 	})
 
 	return token.SignedString(jwtSecret)
@@ -60,4 +61,4 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("userID", userID)
 		c.Next()
 	}
-} 
+}

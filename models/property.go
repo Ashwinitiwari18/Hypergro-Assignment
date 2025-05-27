@@ -25,12 +25,7 @@ type Property struct {
 	Rating        float64            `json:"rating" bson:"rating"`
 	IsVerified    bool               `json:"isVerified" bson:"isVerified"`
 	ListingType   string             `json:"listingType" bson:"listingType"`
-	Location    string             `json:"location" bson:"location"`
-	Area        float64            `json:"area" bson:"area"`
-	Features    []string           `json:"features" bson:"features"`
-	Status      string             `json:"status" bson:"status"`
-	Description string             `json:"description" bson:"description"`
-	CreatedBy   primitive.ObjectID `json:"createdBy" bson:"createdBy"`
-	CreatedAt   time.Time          `json:"createdAt" bson:"createdAt"`
-	UpdatedAt   time.Time          `json:"updatedAt" bson:"updatedAt"`
+	CreatedBy     primitive.ObjectID `json:"createdBy" bson:"createdBy"`
+	CreatedAt     time.Time          `json:"createdAt" bson:"createdAt"`
+	UpdatedAt     time.Time          `json:"updatedAt" bson:"updatedAt"`
 }

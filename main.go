@@ -9,6 +9,8 @@ import (
 	"property-listing/handlers"
 	"property-listing/middleware"
 
+	// "property-listing/utils"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -21,14 +23,13 @@ func main() {
 	cache.InitRedis()
 
 	// Import CSV data if needed
-	/*
-		if os.Getenv("IMPORT_CSV") == "true" {
-			err := utils.ImportPropertiesFromCSV("C:/Users/ASHISH TIWARI/Downloads/db424fd9fb74_1748258398689.csv")
-			if err != nil {
-				log.Printf("Error importing CSV: %v", err)
-			}
-		}
-	*/
+
+	// if os.Getenv("IMPORT_CSV") == "true" {
+	// 	err := utils.ImportPropertiesFromCSV("C:/Users/ASHISH TIWARI/Downloads/db424fd9fb74_1748258398689.csv")
+	// 	if err != nil {
+	// 		log.Printf("Error importing CSV: %v", err)
+	// 	}
+	// }
 
 	r := gin.Default()
 
