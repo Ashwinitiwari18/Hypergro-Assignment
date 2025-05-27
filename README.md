@@ -139,21 +139,23 @@ Authorization: Bearer <your_jwt_token>
 Request Body:
 ```json
 {
-    "title": "Luxury Apartment",
-    "description": "Beautiful 3BHK apartment in prime location",
-    "state": "California",
-    "city": "Los Angeles",
-    "areaSqFt": 2000,
-    "bedrooms": 3,
-    "bathrooms": 2,
-    "furnished": true,
-    "availableFrom": "2024-03-01",
-    "price": 500000,
-    "listingType": "sale",
-    "amenities": ["pool", "gym", "parking"],
-    "tags": ["luxury", "modern"],
-    "colorTheme": "light",
-    "isVerified": true
+  "title": "Green sea.",
+  "type": "Bungalow",
+  "price": 23825384,
+  "state": "Tamil Nadu",
+  "city": "Coimbator",
+  "areaSqFt": 4102,
+  "bedrooms": 5,
+  "bathrooms": 2,
+  "amenities": ["lift", "clubho"],
+  "furnished": "Unfurnished",
+  "availableFrom": "14-10-2025",
+  "listedBy": "Builder",
+  "tags": ["gated-com"],
+  "colorTheme": "#6ab45e",
+  "rating": 4.7,
+  "isVerified": true,
+  "listingType": "rent"
 }
 ```
 
