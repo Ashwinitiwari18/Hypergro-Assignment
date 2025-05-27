@@ -63,6 +63,13 @@ The server will start on `http://localhost:8080` by default.
 
 ---
 
+## Live Demo
+
+The application is currently deployed and accessible at: [https://hypergro-assignment.railway.app](https://hypergro-assignment.railway.app)
+
+---
+
+
 ## API Endpoints
 
 ### **Authentication**
