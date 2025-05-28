@@ -21,7 +21,7 @@ A robust backend system for managing property listings, built with **Go**, **Mon
 
 - Go 1.21 or higher
 - MongoDB (Atlas or local)
-- Redis (optional, for caching)
+- Redis (for caching)
 
 ---
 
@@ -48,7 +48,7 @@ Create a `.env` file in the root directory:
 MONGODB_URI=your_mongodb_connection_string
 GIN_MODE=release
 PORT=8080
-REDIS_URL=your_redis_url (optional)
+REDIS_URL=your_redis_url
 IMPORT_CSV=false
 CSV_PATH=path_to_your_csv (if needed)
 ```
